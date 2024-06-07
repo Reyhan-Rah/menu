@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
-import styles from './NestedList.module.css';
+import React, {useState} from 'react';
 
 interface ItemType {
     name: string;
@@ -27,7 +26,7 @@ interface ItemProps {
     currentLevel: number;
 }
 
-const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, indexes, currentLevel }) => {
+const Item: React.FC<ItemProps> = ({item, onAddChild, onEdit, indexes, currentLevel}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(item.name);
 
@@ -41,7 +40,7 @@ const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, indexes, currentL
     };
 
     return (
-        <div className={styles.item}>
+        <div className="ml-5 p-2 border border-gray-300 rounded mb-2 bg-gray-100 hover:bg-gray-200">
             {isEditing ? (
                 <input
                     type="text"
@@ -51,12 +50,17 @@ const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, indexes, currentL
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSave();
                     }}
-                    className={styles.input}
+                    className="p-1 text-sm"
                 />
             ) : (
                 <span onClick={handleEdit}>{item.name}</span>
             )}
-            {currentLevel < 3 && <button className={styles.button} onClick={() => onAddChild(indexes)}>Add Child</button>}
+            {currentLevel < 3 && (
+                <button className="ml-2 p-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+                        onClick={() => onAddChild(indexes)}>
+                    Add Child
+                </button>
+            )}
             {item.children.map((child, index) => (
                 <Item
                     key={index}
@@ -75,7 +79,7 @@ const NestedList: React.FC = () => {
     const [data, setData] = useState<ItemType[]>(initialData);
 
     const handleAddItem = () => {
-        setData([...data, { name: 'New Item', children: [] }]);
+        setData([...data, {name: 'New Item', children: []}]);
     };
 
     const handleAddChild = (indexes: number[]) => {
@@ -84,7 +88,7 @@ const NestedList: React.FC = () => {
 
         indexes.forEach((index, idx) => {
             if (idx === indexes.length - 1) {
-                currentLevel[index].children.push({ name: 'New Child', children: [] });
+                currentLevel[index].children.push({name: 'New Child', children: []});
             } else {
                 currentLevel = currentLevel[index].children;
             }
@@ -125,10 +129,15 @@ const NestedList: React.FC = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>Nested List Example</div>
-            <button className={styles.addButton} onClick={handleAddItem}>Add Top-Level Item</button>
-            {renderItems(data)}
+        <div className="flex justify-center mt-20 w-full">
+            <div className="max-w-screen-md w-full p-5">
+                <div className="text-2xl mb-5 text-center">Nested List Example</div>
+                <button className="mb-5 p-2 bg-blue-500 text-white rounded hover:bg-blue-700 w-full"
+                        onClick={handleAddItem}>
+                    Add Top-Level Item
+                </button>
+                {renderItems(data)}
+            </div>
         </div>
     );
 };

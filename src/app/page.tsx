@@ -4,11 +4,11 @@ import React from 'react';
 import NestedList from './components/NestedList';
 
 const Home: React.FC = () => {
-  return (
-      <div>
-        <NestedList />
-      </div>
-  );
+    return (
+        <div className="min-h-screen bg-gray-100 flex justify-center">
+            <NestedList/>
+        </div>
+    );
 };
 
 export default Home;
