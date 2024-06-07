@@ -21,12 +21,13 @@ const initialData: ItemType[] = [
 
 interface ItemProps {
     item: ItemType;
-    onAddChild: () => void;
-    onEdit: (newName: string) => void;
+    onAddChild: (indexes: number[]) => void;
+    onEdit: (newName: string, indexes: number[]) => void;
+    indexes: number[];
     currentLevel: number;
 }
 
-const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, currentLevel }) => {
+const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, indexes, currentLevel }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(item.name);
 
@@ -35,7 +36,7 @@ const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, currentLevel }) =
     };
 
     const handleSave = () => {
-        onEdit(newName);
+        onEdit(newName, indexes);
         setIsEditing(false);
     };
 
@@ -55,13 +56,14 @@ const Item: React.FC<ItemProps> = ({ item, onAddChild, onEdit, currentLevel }) =
             ) : (
                 <span onClick={handleEdit}>{item.name}</span>
             )}
-            {currentLevel < 3 && <button className={styles.button} onClick={onAddChild}>Add Child</button>}
+            {currentLevel < 3 && <button className={styles.button} onClick={() => onAddChild(indexes)}>Add Child</button>}
             {item.children.map((child, index) => (
                 <Item
                     key={index}
                     item={child}
-                    onAddChild={() => onAddChild(index)}
-                    onEdit={(newName) => onEdit(newName, index)}
+                    onAddChild={onAddChild}
+                    onEdit={onEdit}
+                    indexes={[...indexes, index]}
                     currentLevel={currentLevel + 1}
                 />
             ))}
@@ -79,17 +81,13 @@ const NestedList: React.FC = () => {
     const handleAddChild = (indexes: number[]) => {
         const newData = [...data];
         let currentLevel = newData;
-        let depth = 0;
 
         indexes.forEach((index, idx) => {
             if (idx === indexes.length - 1) {
-                if (depth < 2) {
-                    currentLevel[index].children.push({ name: 'New Child', children: [] });
-                }
+                currentLevel[index].children.push({ name: 'New Child', children: [] });
             } else {
                 currentLevel = currentLevel[index].children;
             }
-            depth++;
         });
 
         setData(newData);
@@ -117,8 +115,9 @@ const NestedList: React.FC = () => {
                 <Item
                     key={index}
                     item={item}
-                    onAddChild={() => handleAddChild(currentIndexes)}
-                    onEdit={(newName: string) => handleEdit(newName, currentIndexes)}
+                    onAddChild={handleAddChild}
+                    onEdit={handleEdit}
+                    indexes={currentIndexes}
                     currentLevel={currentLevel}
                 />
             );
